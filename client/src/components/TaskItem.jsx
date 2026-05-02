@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { toggleTask, deleteTask } from '../services/api';
+import EditTaskModal from './EditTaskModal';
 import styles from './TaskItem.module.css';
 
 export default function TaskItem({ task, onUpdate, onDelete }) {
-  const [loading, setLoading] = useState(false);
+  const [loading,  setLoading]  = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
 
   const handleToggle = async () => {
     setLoading(true);
@@ -28,25 +30,48 @@ export default function TaskItem({ task, onUpdate, onDelete }) {
   };
 
   return (
-    <div className={`${styles.item} ${task.completed ? styles.completed : ''}`}>
-      <input
-        type="checkbox"
-        className={styles.checkbox}
-        checked={task.completed}
-        onChange={handleToggle}
-        disabled={loading}
-      />
-      <div className={styles.content}>
-        <div className={styles.meta}>
-          <span className={styles.subject}>{task.subject}</span>
-          <span className={styles.separator}>·</span>
-          <span className={styles.category}>{task.category}</span>
+    <>
+      <div className={`${styles.item} ${task.completed ? styles.completed : ''}`}>
+        <input
+          type="checkbox"
+          className={styles.checkbox}
+          checked={task.completed}
+          onChange={handleToggle}
+          disabled={loading}
+        />
+        <div className={styles.content}>
+          <div className={styles.meta}>
+            <span className={styles.subject}>{task.subject}</span>
+            <span className={styles.separator}>·</span>
+            <span className={styles.category}>{task.category}</span>
+          </div>
+          <p className={styles.description}>{task.description}</p>
         </div>
-        <p className={styles.description}>{task.description}</p>
+        <div className={styles.itemActions}>
+          <button
+            onClick={() => setShowEdit(true)}
+            className={styles.editBtn}
+            title="Modifica"
+          >
+            &#x270E;
+          </button>
+          <button
+            onClick={handleDelete}
+            className={styles.deleteBtn}
+            title="Elimina"
+          >
+            &#x2715;
+          </button>
+        </div>
       </div>
-      <button onClick={handleDelete} className={styles.deleteBtn} title="Elimina">
-        &#x2715;
-      </button>
-    </div>
+
+      {showEdit && (
+        <EditTaskModal
+          task={task}
+          onClose={() => setShowEdit(false)}
+          onUpdate={onUpdate}
+        />
+      )}
+    </>
   );
 }

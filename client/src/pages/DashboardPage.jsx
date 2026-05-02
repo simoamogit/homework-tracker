@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { getTasks } from '../services/api';
-import Navbar       from '../components/Navbar';
-import TaskItem     from '../components/TaskItem';
-import AddTaskForm  from '../components/AddTaskForm';
-import styles       from './Dashboard.module.css';
+import api           from '../services/api';
+import Navbar        from '../components/Navbar';
+import TaskItem      from '../components/TaskItem';
+import AddTaskForm   from '../components/AddTaskForm';
+import styles        from './Dashboard.module.css';
 
-// Formatta "2025-05-04" → "Lunedì 4 Maggio 2025"
 function formatDate(dateStr) {
   const [y, m, d] = dateStr.split('-').map(Number);
   const date = new Date(y, m - 1, d);
@@ -18,10 +18,12 @@ function formatDate(dateStr) {
 }
 
 export default function DashboardPage() {
-  const [tasks,   setTasks]   = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState('');
+  const [tasks,              setTasks]              = useState([]);
+  const [loading,            setLoading]            = useState(true);
+  const [error,              setError]              = useState('');
+  const [hideCompletedDays,  setHideCompletedDays]  = useState(false);
 
+  // Carica i compiti
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -36,7 +38,14 @@ export default function DashboardPage() {
     fetchTasks();
   }, []);
 
-  // Raggruppa i compiti per data → { "2025-05-04": [...], "2025-05-05": [...] }
+  // Keep-alive: pinga Render ogni 14 minuti per evitare il cold start
+  useEffect(() => {
+    const interval = setInterval(() => {
+      api.get('/health').catch(() => {});
+    }, 14 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const grouped = useMemo(() => {
     return tasks.reduce((acc, task) => {
       const dateKey = new Date(task.date).toLocaleDateString('en-CA');
@@ -46,19 +55,18 @@ export default function DashboardPage() {
     }, {});
   }, [tasks]);
 
-  const sortedDates = Object.keys(grouped).sort();
+  const today = new Date().toLocaleDateString('en-CA');
 
-  const handleTaskAdded = (newTask) => {
-    setTasks(prev => [...prev, newTask]);
-  };
+  const sortedDates = Object.keys(grouped).sort().filter(dateKey => {
+    if (!hideCompletedDays) return true;
+    const isPast  = dateKey < today;
+    const allDone = grouped[dateKey].every(t => t.completed);
+    return !(isPast && allDone);
+  });
 
-  const handleTaskUpdated = (updatedTask) => {
-    setTasks(prev => prev.map(t => t.id === updatedTask.id ? updatedTask : t));
-  };
-
-  const handleTaskDeleted = (deletedId) => {
-    setTasks(prev => prev.filter(t => t.id !== deletedId));
-  };
+  const handleTaskAdded   = (newTask)     => setTasks(prev => [...prev, newTask]);
+  const handleTaskUpdated = (updatedTask) => setTasks(prev => prev.map(t => t.id === updatedTask.id ? updatedTask : t));
+  const handleTaskDeleted = (deletedId)   => setTasks(prev => prev.filter(t => t.id !== deletedId));
 
   return (
     <div className={styles.page}>
@@ -67,7 +75,15 @@ export default function DashboardPage() {
       <main className={styles.main}>
         <div className={styles.topBar}>
           <h2 className={styles.heading}>Compiti</h2>
-          <AddTaskForm onTaskAdded={handleTaskAdded} />
+          <div className={styles.controls}>
+            <button
+              className={`${styles.toggleBtn} ${hideCompletedDays ? styles.active : ''}`}
+              onClick={() => setHideCompletedDays(v => !v)}
+            >
+              {hideCompletedDays ? 'Mostra tutti i giorni' : 'Nascondi giorni completati'}
+            </button>
+            <AddTaskForm onTaskAdded={handleTaskAdded} />
+          </div>
         </div>
 
         {loading && <p className={styles.message}>Caricamento...</p>}
@@ -76,7 +92,11 @@ export default function DashboardPage() {
         {!loading && !error && sortedDates.length === 0 && (
           <div className={styles.empty}>
             <p className={styles.emptyTitle}>Nessun compito</p>
-            <p className={styles.emptySubtitle}>Aggiungi il tuo primo compito con il pulsante qui sopra.</p>
+            <p className={styles.emptySubtitle}>
+              {hideCompletedDays
+                ? 'Tutti i giorni passati sono completati.'
+                : 'Aggiungi il tuo primo compito con il pulsante qui sopra.'}
+            </p>
           </div>
         )}
 
@@ -84,15 +104,26 @@ export default function DashboardPage() {
           const dayTasks   = grouped[dateKey];
           const doneCount  = dayTasks.filter(t => t.completed).length;
           const totalCount = dayTasks.length;
+          const percent    = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
+          const allDone    = doneCount === totalCount;
 
           return (
             <section key={dateKey} className={styles.group}>
               <div className={styles.groupHeader}>
-                <h3 className={styles.dateLabel}>{formatDate(dateKey)}</h3>
-                <span className={styles.progress}>
-                  {doneCount}/{totalCount}
-                </span>
+                <h3 className={`${styles.dateLabel} ${allDone ? styles.dateLabelDone : ''}`}>
+                  {formatDate(dateKey)}
+                </h3>
+                <span className={styles.progress}>{doneCount}/{totalCount}</span>
               </div>
+
+              {/* Barra di progresso */}
+              <div className={styles.progressBar}>
+                <div
+                  className={styles.progressFill}
+                  style={{ width: `${percent}%` }}
+                />
+              </div>
+
               <div className={styles.taskList}>
                 {dayTasks.map(task => (
                   <TaskItem
