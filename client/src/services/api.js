@@ -1,26 +1,21 @@
+// client/src/services/api.js
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+const API = axios.create({
+  // Prende l'URL da Netlify, se non esiste usa localhost
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api', 
 });
 
-api.interceptors.request.use((config) => {
+// Aggiungi il token per le chiamate protette
+API.interceptors.request.use((req) => {
   const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+  if (token) req.headers.Authorization = `Bearer ${token}`;
+  return req;
 });
 
-// Auth
-export const registerUser = (email, password) =>
-  api.post('/auth/register', { email, password });
-
-export const loginUser = (email, password) =>
-  api.post('/auth/login', { email, password });
-
-// Tasks
-export const getTasks    = ()              => api.get('/tasks');
+export const login = (formData) => API.post('/auth/login', formData);
+export const register = (formData) => API.post('/auth/register', formData);
+export const getTasks = () => API.get('/tasks');
 export const createTask  = (taskData)      => api.post('/tasks', taskData);
 export const updateTask  = (id, taskData)  => api.put(`/tasks/${id}`, taskData);
 export const toggleTask  = (id, completed) => api.patch(`/tasks/${id}/complete`, { completed });
