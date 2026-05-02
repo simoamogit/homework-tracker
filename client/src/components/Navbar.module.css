@@ -1,0 +1,61 @@
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 56px;
+  background: #ffffff;
+  border-bottom: 1px solid #e8e8e8;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.brand {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111111;
+  letter-spacing: -0.3px;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.email {
+  font-size: 0.85rem;
+  color: #888888;
+}
+
+.logoutBtn {
+  background: none;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  color: #444444;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.logoutBtn:hover {
+  background: #111111;
+  color: #ffffff;
+  border-color: #111111;
+}
+
+.settingsBtn {
+  background: none;
+  border: none;
+  font-size: 0.85rem;
+  color: #888888;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.settingsBtn:hover {
+  color: #111111;
+}

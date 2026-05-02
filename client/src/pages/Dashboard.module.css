@@ -1,0 +1,97 @@
+.page {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.heading {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #111111;
+  letter-spacing: -0.5px;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.groupHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 0.25rem;
+}
+
+.dateLabel {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #111111;
+  text-transform: capitalize;
+  letter-spacing: 0.1px;
+}
+
+.progress {
+  font-size: 0.78rem;
+  color: #aaaaaa;
+  font-weight: 500;
+}
+
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.message {
+  color: #888888;
+  font-size: 0.9rem;
+}
+
+.errorMsg {
+  color: #cc0000;
+  font-size: 0.9rem;
+  background: #fff5f5;
+  border: 1px solid #f5c0c0;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+}
+
+.empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #ffffff;
+  border: 1px solid #eeeeee;
+  border-radius: 8px;
+}
+
+.emptyTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 0.4rem;
+}
+
+.emptySubtitle {
+  font-size: 0.875rem;
+  color: #aaaaaa;
+}

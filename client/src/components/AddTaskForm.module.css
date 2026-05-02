@@ -1,0 +1,167 @@
+.openBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #111111;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  letter-spacing: 0.2px;
+}
+
+.openBtn:hover {
+  background: #333333;
+}
+
+.formCard {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.formHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.formTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111111;
+  letter-spacing: -0.2px;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  color: #aaaaaa;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  transition: color 0.15s;
+}
+
+.closeBtn:hover {
+  color: #111111;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #444444;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input {
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #111111;
+  background: #fafafa;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+  width: 100%;
+  font-family: inherit;
+}
+
+.input:focus {
+  border-color: #111111;
+  background: #ffffff;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 72px;
+}
+
+.error {
+  background: #fff5f5;
+  color: #cc0000;
+  border: 1px solid #f5c0c0;
+  border-radius: 6px;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.85rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.cancelBtn {
+  background: none;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.875rem;
+  color: #555555;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cancelBtn:hover {
+  background: #f5f5f5;
+}
+
+.submitBtn {
+  background: #111111;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: #333333;
+}
+
+.submitBtn:disabled {
+  background: #aaaaaa;
+  cursor: not-allowed;
+}
+
+.noItems {
+  font-size: 0.82rem;
+  color: #aaaaaa;
+  font-style: italic;
+  padding: 0.5rem 0;
+}
+
+.settingsLink {
+  color: #111111;
+  font-weight: 600;
+}
