@@ -20,10 +20,18 @@ API.interceptors.request.use((req) => {
 export const loginUser = (formData) => API.post('/auth/login', formData);
 export const registerUser = (formData) => API.post('/auth/register', formData);
 
+// ... (resto del codice sopra invariato)
+
 export const getTasks = () => API.get('/tasks');
 export const createTask = (data) => API.post('/tasks', data);
+
+// MODIFICA QUESTA RIGA: esportiamo updateTask ma creiamo anche l'alias toggleTask
 export const updateTask = (id, data) => API.put(`/tasks/${id}`, data);
+export const toggleTask = (id, data) => API.put(`/tasks/${id}`, data); // Aggiungi questa!
+
 export const deleteTask = (id) => API.delete(`/tasks/${id}`);
+
+// ... (resto del codice sotto invariato)
 export const getSettings = () => API.get('/settings');
 export const updateSettings = (data) => API.post('/settings', data);
 
