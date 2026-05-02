@@ -1,9 +1,13 @@
-// client/src/services/api.js
 import axios from 'axios';
 
+// COMMENTA la riga sotto temporaneamente per testare
+// const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+// USA QUESTA riga fissa per essere sicuro:
+const API_URL = 'https://homework-tracker-oano.onrender.com/api';
+
 const API = axios.create({
-  // Prende l'URL da Netlify, se non esiste usa localhost
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api', 
+  baseURL: API_URL,
 });
 
 // Aggiungi il token per le chiamate protette
