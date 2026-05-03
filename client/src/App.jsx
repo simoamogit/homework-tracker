@@ -1,34 +1,41 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth }   from './context/AuthContext';
 import { ThemeProvider }           from './context/ThemeContext';
+import LandingPage   from './pages/LandingPage';
 import LoginPage     from './pages/LoginPage';
 import RegisterPage  from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import SettingsPage  from './pages/SettingsPage';
 import ArchivePage   from './pages/ArchivePage';
 
+function LandingRoute({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  return user ? <Navigate to="/dashboard" replace /> : children;
+}
+
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
-  if (loading) return <div style={{ padding: '2rem' }}>Caricamento...</div>;
-  return user ? children : <Navigate to="/login" replace />;
+  if (loading) return null;
+  return user ? children : <Navigate to="/" replace />;
 }
 
 function PublicRoute({ children }) {
   const { user, loading } = useAuth();
-  if (loading) return <div style={{ padding: '2rem' }}>Caricamento...</div>;
+  if (loading) return null;
   return user ? <Navigate to="/dashboard" replace /> : children;
 }
 
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/"          element={<LandingRoute><LandingPage /></LandingRoute>} />
       <Route path="/login"     element={<PublicRoute><LoginPage /></PublicRoute>} />
       <Route path="/register"  element={<PublicRoute><RegisterPage /></PublicRoute>} />
       <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
       <Route path="/settings"  element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
       <Route path="/archive"   element={<PrivateRoute><ArchivePage /></PrivateRoute>} />
-      <Route path="*"          element={<Navigate to="/dashboard" replace />} />
+      <Route path="*"          element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

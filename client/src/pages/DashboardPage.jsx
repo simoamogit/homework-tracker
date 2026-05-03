@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { getTasks } from '../services/api';
 import api           from '../services/api';
 import Navbar        from '../components/Navbar';
@@ -19,9 +19,11 @@ export default function DashboardPage() {
   const [tasks,             setTasks]             = useState([]);
   const [loading,           setLoading]           = useState(true);
   const [error,             setError]             = useState('');
-  const [view,              setView]              = useState('list'); // list | week | month
+  const [view,              setView]              = useState('list');
   const [search,            setSearch]            = useState('');
   const [hideCompletedDays, setHideCompletedDays] = useState(false);
+  const [filtriOpen,        setFiltriOpen]        = useState(false);
+  const filtriRef = useRef(null);
 
   const today = new Date().toLocaleDateString('en-CA');
 
@@ -38,24 +40,32 @@ export default function DashboardPage() {
     return () => clearInterval(id);
   }, []);
 
-  // Today + future only (past → Archive)
+  // Close filtri panel on outside click
+  useEffect(() => {
+    function handler(e) {
+      if (filtriRef.current && !filtriRef.current.contains(e.target)) {
+        setFiltriOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
   const presentTasks = useMemo(() =>
     tasks.filter(t => new Date(t.date).toLocaleDateString('en-CA') >= today),
     [tasks, today]
   );
 
-  // Apply search
   const filtered = useMemo(() => {
     if (!search.trim()) return presentTasks;
     const q = search.toLowerCase();
     return presentTasks.filter(t =>
-      t.subject.toLowerCase().includes(q)     ||
-      t.category.toLowerCase().includes(q)    ||
+      t.subject.toLowerCase().includes(q) ||
+      t.category.toLowerCase().includes(q) ||
       t.description.toLowerCase().includes(q)
     );
   }, [presentTasks, search]);
 
-  // Group by date
   const grouped = useMemo(() =>
     filtered.reduce((acc, t) => {
       const k = new Date(t.date).toLocaleDateString('en-CA');
@@ -68,9 +78,11 @@ export default function DashboardPage() {
 
   const sortedDates = Object.keys(grouped).sort().filter(key => {
     if (!hideCompletedDays) return true;
-    if (key === today) return true; // today always visible
+    if (key === today) return true;
     return !grouped[key].every(t => t.completed);
   });
+
+  const filtersActive = search || hideCompletedDays || view !== 'list';
 
   const handleTaskAdded   = t   => setTasks(p => [...p, t]);
   const handleTaskUpdated = upd => setTasks(p => p.map(t => t.id === upd.id ? upd : t));
@@ -81,45 +93,73 @@ export default function DashboardPage() {
       <Navbar />
       <main className={styles.main}>
 
-        {/* Top bar */}
         <div className={styles.topBar}>
-          <h2 className={styles.heading}>Compiti</h2>
-          <AddTaskForm onTaskAdded={handleTaskAdded} />
-        </div>
+          {/* Filtri dropdown */}
+          <div className={styles.filtriWrap} ref={filtriRef}>
+            <button
+              className={`${styles.filtriBtn} ${filtriOpen ? styles.filtriOpen : ''}`}
+              onClick={() => setFiltriOpen(v => !v)}
+            >
+              <i className="bi bi-sliders"></i>
+              Filtri
+              {filtersActive && <span className={styles.filtriDot} />}
+            </button>
 
-        {/* View tabs + search */}
-        <div className={styles.toolbar}>
-          <div className={styles.tabs}>
-            {['list','week','month'].map(v => (
-              <button
-                key={v}
-                className={`${styles.tab} ${view === v ? styles.tabActive : ''}`}
-                onClick={() => setView(v)}
-              >
-                {{ list: 'Lista', week: 'Settimana', month: 'Mese' }[v]}
-              </button>
-            ))}
-          </div>
-          <div className={styles.toolbarRight}>
-            {view === 'list' && (
-              <button
-                className={`${styles.toggleBtn} ${hideCompletedDays ? styles.toggleActive : ''}`}
-                onClick={() => setHideCompletedDays(v => !v)}
-              >
-                {hideCompletedDays ? 'Mostra tutti' : 'Nascondi completati'}
-              </button>
+            {filtriOpen && (
+              <div className={styles.filtriPanel}>
+                {/* View */}
+                <div className={styles.filtriSection}>
+                  <p className={styles.filtriLabel}>Vista</p>
+                  <div className={styles.tabs}>
+                    {[['list','Lista'],['week','Settimana'],['month','Mese']].map(([v,label]) => (
+                      <button
+                        key={v}
+                        className={`${styles.tab} ${view === v ? styles.tabActive : ''}`}
+                        onClick={() => setView(v)}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Search */}
+                <div className={styles.filtriSection}>
+                  <p className={styles.filtriLabel}>Cerca</p>
+                  <div className={styles.searchWrap}>
+                    <i className={`bi bi-search ${styles.searchIcon}`}></i>
+                    <input
+                      type="text"
+                      className={styles.search}
+                      placeholder="Materia, categoria, descrizione..."
+                      value={search}
+                      onChange={e => setSearch(e.target.value)}
+                      autoFocus
+                    />
+                    {search && (
+                      <button className={styles.searchClear} onClick={() => setSearch('')}>
+                        <i className="bi bi-x"></i>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
             )}
-            <input
-              type="text"
-              className={styles.search}
-              placeholder="Cerca..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
+          </div>
+
+          {/* Right controls */}
+          <div className={styles.topBarRight}>
+            <button
+              className={`${styles.eyeBtn} ${hideCompletedDays ? styles.eyeActive : ''}`}
+              onClick={() => setHideCompletedDays(v => !v)}
+              title={hideCompletedDays ? 'Mostra tutti i giorni' : 'Nascondi giorni completati'}
+            >
+              <i className={`bi ${hideCompletedDays ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+            </button>
+            <AddTaskForm onTaskAdded={handleTaskAdded} />
           </div>
         </div>
 
-        {/* Content */}
         {loading && <SkeletonLoader />}
         {error   && <p className={styles.errorMsg}>{error}</p>}
 
@@ -129,23 +169,26 @@ export default function DashboardPage() {
 
         {!loading && !error && view === 'list' && sortedDates.length === 0 && (
           <div className={styles.empty}>
-            <p className={styles.emptyTitle}>Nessun compito</p>
+            <i className={`bi bi-inbox ${styles.emptyIcon}`}></i>
+            <p className={styles.emptyTitle}>
+              {search ? 'Nessun risultato' : hideCompletedDays ? 'Tutto completato' : 'Nessun compito'}
+            </p>
             <p className={styles.emptySubtitle}>
               {search
-                ? 'Nessun risultato per la ricerca.'
+                ? 'Prova con un termine diverso.'
                 : hideCompletedDays
                   ? 'Tutti i prossimi giorni sono completati.'
-                  : 'Aggiungi il tuo primo compito con il pulsante qui sopra.'}
+                  : 'Aggiungi un compito con il pulsante +'}
             </p>
           </div>
         )}
 
         {!loading && !error && view === 'list' && sortedDates.map(dateKey => {
-          const dayTasks   = grouped[dateKey];
-          const doneCount  = dayTasks.filter(t => t.completed).length;
-          const totalCount = dayTasks.length;
-          const percent    = Math.round((doneCount / totalCount) * 100);
-          const allDone    = doneCount === totalCount;
+          const dayTasks  = grouped[dateKey];
+          const doneCount = dayTasks.filter(t => t.completed).length;
+          const total     = dayTasks.length;
+          const percent   = Math.round((doneCount / total) * 100);
+          const allDone   = doneCount === total;
 
           return (
             <section key={dateKey} className={styles.group}>
@@ -153,7 +196,7 @@ export default function DashboardPage() {
                 <h3 className={`${styles.dateLabel} ${allDone ? styles.dateLabelDone : ''}`}>
                   {formatDate(dateKey)}
                 </h3>
-                <span className={styles.progress}>{doneCount}/{totalCount}</span>
+                <span className={styles.progress}>{doneCount}/{total}</span>
               </div>
               <div className={styles.progressBar}>
                 <div className={styles.progressFill} style={{ width: `${percent}%` }} />

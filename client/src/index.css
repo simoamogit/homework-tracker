@@ -63,3 +63,29 @@ body {
   min-height: 100vh;
   transition: background-color 0.2s, color 0.2s;
 }
+
+/* Bootstrap checkbox overrides for theming */
+.form-check-input {
+  background-color: var(--surface-2);
+  border-color: var(--border);
+  cursor: pointer;
+}
+
+.form-check-input:checked {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
+.form-check-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 0.2rem rgba(17,17,17,0.15) !important;
+}
+
+[data-theme="dark"] .form-check-input:focus {
+  box-shadow: 0 0 0 0.2rem rgba(238,238,238,0.15) !important;
+}
+
+[data-theme="dark"] .form-check-input {
+  background-color: var(--surface-2);
+  border-color: var(--border);
+}
