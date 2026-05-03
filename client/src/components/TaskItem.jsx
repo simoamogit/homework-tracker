@@ -7,6 +7,11 @@ export default function TaskItem({ task, onUpdate, onDelete }) {
   const [loading,  setLoading]  = useState(false);
   const [showEdit, setShowEdit] = useState(false);
 
+  const today    = new Date().toLocaleDateString('en-CA');
+  const taskDate = new Date(task.date).toLocaleDateString('en-CA');
+  const isToday   = taskDate === today && !task.completed;
+  const isOverdue = taskDate <  today && !task.completed;
+
   const handleToggle = async () => {
     setLoading(true);
     try {
@@ -44,22 +49,16 @@ export default function TaskItem({ task, onUpdate, onDelete }) {
             <span className={styles.subject}>{task.subject}</span>
             <span className={styles.separator}>·</span>
             <span className={styles.category}>{task.category}</span>
+            {isToday   && <span className={styles.badgeToday}>Oggi</span>}
+            {isOverdue && <span className={styles.badgeOverdue}>Scaduto</span>}
           </div>
           <p className={styles.description}>{task.description}</p>
         </div>
-        <div className={styles.itemActions}>
-          <button
-            onClick={() => setShowEdit(true)}
-            className={styles.editBtn}
-            title="Modifica"
-          >
+        <div className={styles.actions}>
+          <button className={styles.editBtn} onClick={() => setShowEdit(true)} title="Modifica">
             &#x270E;
           </button>
-          <button
-            onClick={handleDelete}
-            className={styles.deleteBtn}
-            title="Elimina"
-          >
+          <button className={styles.deleteBtn} onClick={handleDelete} title="Elimina">
             &#x2715;
           </button>
         </div>

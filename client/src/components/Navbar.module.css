@@ -1,61 +1,174 @@
 .nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2rem;
+  padding: 0 1.5rem;
   height: 56px;
-  background: #ffffff;
-  border-bottom: 1px solid #e8e8e8;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
 }
 
 .brand {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  color: #111111;
+  color: var(--text-1);
   letter-spacing: -0.3px;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
+/* Desktop nav */
 .right {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.email {
+.navLink {
+  background: none;
+  border: none;
   font-size: 0.85rem;
-  color: #888888;
+  color: var(--text-3);
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+  font-family: inherit;
+}
+
+.navLink:hover,
+.navLink.active {
+  color: var(--text-1);
+}
+
+.themeBtn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--text-3);
+  padding: 0.2rem 0.3rem;
+  transition: color 0.15s;
+  line-height: 1;
+}
+
+.themeBtn:hover {
+  color: var(--text-1);
+}
+
+.email {
+  font-size: 0.82rem;
+  color: var(--text-3);
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .logoutBtn {
   background: none;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 0.35rem 0.85rem;
-  font-size: 0.85rem;
-  color: #444444;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.82rem;
+  color: var(--text-2);
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
+  font-family: inherit;
 }
 
 .logoutBtn:hover {
-  background: #111111;
-  color: #ffffff;
-  border-color: #111111;
+  background: var(--accent);
+  color: var(--surface);
+  border-color: var(--accent);
 }
 
-.settingsBtn {
+/* Mobile */
+.mobileRight {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hamburger {
   background: none;
   border: none;
-  font-size: 0.85rem;
-  color: #888888;
+  font-size: 1.1rem;
   cursor: pointer;
-  padding: 0;
-  transition: color 0.15s;
+  color: var(--text-1);
+  padding: 0.3rem 0.4rem;
+  line-height: 1;
+  font-family: inherit;
 }
 
-.settingsBtn:hover {
-  color: #111111;
+.mobileMenu {
+  position: absolute;
+  top: 56px;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  z-index: 40;
+}
+
+.mobileLink {
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.95rem;
+  color: var(--text-2);
+  cursor: pointer;
+  padding: 0.55rem 0;
+  font-family: inherit;
+  transition: color 0.15s;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.mobileLink:last-of-type {
+  border-bottom: none;
+}
+
+.mobileLink.active {
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.mobileDivider {
+  border-top: 1px solid var(--border);
+  margin: 0.5rem 0;
+}
+
+.mobileEmail {
+  font-size: 0.82rem;
+  color: var(--text-3);
+  padding: 0.25rem 0;
+}
+
+.mobileLogout {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.55rem;
+  font-size: 0.875rem;
+  color: var(--text-2);
+  cursor: pointer;
+  text-align: center;
+  margin-top: 0.25rem;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.mobileLogout:hover {
+  background: var(--surface-2);
+}
+
+@media (max-width: 640px) {
+  .right      { display: none; }
+  .mobileRight { display: flex; }
 }

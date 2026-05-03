@@ -1,0 +1,209 @@
+.container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.navRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.navBtn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.3rem 0.75rem;
+  cursor: pointer;
+  color: var(--text-2);
+  font-size: 0.9rem;
+  transition: background 0.15s;
+  font-family: inherit;
+}
+
+.navBtn:hover { background: var(--surface-2); }
+
+.navLabel {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-1);
+  text-transform: capitalize;
+}
+
+/* Week view */
+.weekGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: var(--border-light);
+}
+
+.weekCell {
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.6rem 0.3rem;
+  gap: 0.2rem;
+  transition: background 0.15s;
+  min-height: 70px;
+}
+
+.weekCell.hasTasks { cursor: pointer; }
+.weekCell.hasTasks:hover { background: var(--surface-2); }
+
+.weekDayName {
+  font-size: 0.7rem;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.weekDayNum {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.weekCount {
+  font-size: 0.68rem;
+  color: var(--text-3);
+  background: var(--surface-2);
+  border-radius: 10px;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--border-light);
+}
+
+/* Month view */
+.monthDayNames {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.monthDayName {
+  text-align: center;
+  padding: 0.5rem 0;
+  font-size: 0.72rem;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.monthGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: var(--border-light);
+}
+
+.monthCell {
+  background: var(--surface);
+  min-height: 52px;
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.monthCellFilled { cursor: pointer; transition: background 0.15s; }
+.monthCellFilled:hover { background: var(--surface-2); }
+
+.monthNum {
+  font-size: 0.82rem;
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.dotPending { background: var(--badge-over-text); }
+.dotDone    { background: var(--success-text); }
+
+/* Shared states */
+.isToday .weekDayNum,
+.isToday .monthNum {
+  background: var(--accent);
+  color: var(--surface);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+}
+
+.isSelected { background: var(--surface-2) !important; }
+
+/* Detail panel */
+.detail {
+  border-top: 1px solid var(--border-light);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detailTitle {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-1);
+  text-transform: capitalize;
+  margin-bottom: 0.25rem;
+}
+
+.detailEmpty {
+  font-size: 0.85rem;
+  color: var(--text-3);
+  font-style: italic;
+}
+
+.miniTask {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 5px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-light);
+}
+
+.miniDone { opacity: 0.45; }
+.miniDone .miniDesc { text-decoration: line-through; }
+
+.miniSubject {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-1);
+  text-transform: uppercase;
+  white-space: nowrap;
+  letter-spacing: 0.4px;
+}
+
+.miniDesc {
+  font-size: 0.85rem;
+  color: var(--text-2);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .weekDayName { font-size: 0.62rem; }
+  .weekDayNum  { font-size: 0.88rem; }
+  .weekCount   { display: none; }
+  .monthCell   { min-height: 40px; padding: 0.25rem; }
+}

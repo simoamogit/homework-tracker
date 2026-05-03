@@ -24,80 +24,6 @@
   letter-spacing: -0.5px;
 }
 
-/* Toolbar */
-.toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.tabs {
-  display: flex;
-  gap: 0.25rem;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 7px;
-  padding: 0.2rem;
-}
-
-.tab {
-  background: none;
-  border: none;
-  border-radius: 5px;
-  padding: 0.35rem 0.9rem;
-  font-size: 0.82rem;
-  font-weight: 500;
-  color: var(--text-3);
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-  font-family: inherit;
-  white-space: nowrap;
-}
-
-.tab:hover  { color: var(--text-1); }
-
-.tabActive {
-  background: var(--surface);
-  color: var(--text-1);
-  font-weight: 600;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.toolbarRight {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-}
-
-.toggleBtn {
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 0.4rem 0.85rem;
-  font-size: 0.78rem;
-  color: var(--text-3);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
-  font-family: inherit;
-}
-
-.toggleBtn:hover { background: var(--surface-2); color: var(--text-1); }
-
-.toggleActive {
-  background: var(--accent);
-  color: var(--surface);
-  border-color: var(--accent);
-}
-
-.toggleActive:hover {
-  background: var(--accent-hover);
-  color: var(--surface);
-}
-
 .search {
   padding: 0.4rem 0.8rem;
   border: 1px solid var(--border);
@@ -107,19 +33,14 @@
   color: var(--text-1);
   outline: none;
   transition: border-color 0.15s;
-  width: 160px;
+  width: 180px;
   font-family: inherit;
 }
 
 .search:focus { border-color: var(--accent); }
 .search::placeholder { color: var(--text-4); }
 
-/* List view */
-.group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
+.group  { display: flex; flex-direction: column; gap: 0.4rem; }
 
 .groupHeader {
   display: flex;
@@ -135,8 +56,7 @@
 }
 
 .dateLabelDone { color: var(--text-4); }
-
-.progress { font-size: 0.78rem; color: var(--text-4); font-weight: 500; }
+.progress      { font-size: 0.78rem; color: var(--text-4); }
 
 .progressBar {
   height: 3px;
@@ -148,14 +68,13 @@
 
 .progressFill {
   height: 100%;
-  background: var(--accent);
+  background: var(--success-text);
   border-radius: 2px;
   transition: width 0.4s ease;
 }
 
 .taskList { display: flex; flex-direction: column; gap: 0.4rem; }
 
-/* States */
 .errorMsg {
   color: var(--error-text);
   background: var(--error-bg);
@@ -178,5 +97,4 @@
 
 @media (max-width: 480px) {
   .main { padding: 1.25rem 1rem; }
-  .search { width: 120px; }
 }
