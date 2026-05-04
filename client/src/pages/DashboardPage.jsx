@@ -77,10 +77,9 @@ export default function DashboardPage() {
   );
 
   const sortedDates = Object.keys(grouped).sort().filter(key => {
-    if (!hideCompletedDays) return true;
-    if (key === today) return true;
-    return !grouped[key].every(t => t.completed);
-  });
+  if (!hideCompletedDays) return true;
+  return !grouped[key].every(t => t.completed);
+});
 
   const filtersActive = search || hideCompletedDays || view !== 'list';
 
