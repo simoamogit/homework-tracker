@@ -19,7 +19,7 @@ function NotesPreview({ notes }) {
 }
 
 export default function TaskItem({ task, onUpdate, onDeleteRequest }) {
-  const [loading,  setLoading]  = useState(false);
+  const [loading, setLoading] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
@@ -86,7 +86,7 @@ export default function TaskItem({ task, onUpdate, onDeleteRequest }) {
               {hasAttachments && (
                 <div className={styles.attachmentList}>
                   {task.attachments.map(a => (
-                    
+                    <a
                       key={a.id}
                       href={a.url}
                       target="_blank"
