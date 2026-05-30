@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { getSettings, updateSettings } from '../services/api';
 import styles from './SettingsPage.module.css';
+import { useTheme } from '../context/ThemeContext';
 
 function ListEditor({ title, items, onAdd, onDelete }) {
   const [input, setInput] = useState('');

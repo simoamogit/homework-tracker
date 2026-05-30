@@ -25,6 +25,7 @@ export default function Navbar() {
   const links = [
     { path: '/dashboard', icon: 'bi-journals', label: 'Compiti'  },
     { path: '/archive',   icon: 'bi-archive',  label: 'Archivio' },
+    { path: '/statistics', icon: 'bi-bar-chart', label: 'Statistiche' },
   ];
 
   return (

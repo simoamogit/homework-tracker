@@ -1,135 +1,79 @@
 .addBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  background: var(--accent);
-  color: var(--surface);
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: background 0.15s;
-  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px;
+  background: var(--accent); color: var(--surface);
+  border: none; border-radius: 8px; font-size: 1.1rem;
+  cursor: pointer; transition: background 0.15s; flex-shrink: 0;
 }
-
 .addBtn:hover { background: var(--accent-hover); }
 
 .overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  padding: 1rem;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100; padding: 1rem;
 }
-
 .modal {
-  background: var(--surface);
-  border-radius: 8px;
-  padding: 1.75rem;
-  width: 100%;
-  max-width: 480px;
-  border: 1px solid var(--border);
-  max-height: 90vh;
-  overflow-y: auto;
+  background: var(--surface); border-radius: 8px; padding: 1.75rem;
+  width: 100%; max-width: 500px; border: 1px solid var(--border);
+  max-height: 90vh; overflow-y: auto;
 }
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.25rem;
-}
-
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
 .title  { font-size: 0.95rem; font-weight: 700; color: var(--text-1); }
-
 .closeBtn {
-  background: none;
-  border: none;
-  display: flex;
-  align-items: center;
-  font-size: 0.85rem;
-  color: var(--text-4);
-  cursor: pointer;
-  padding: 0.25rem;
-  transition: color 0.15s;
-  font-family: inherit;
+  background: none; border: none; font-size: 0.85rem; color: var(--text-4);
+  cursor: pointer; padding: 0.2rem 0.4rem; transition: color 0.15s; font-family: inherit;
+  display: flex; align-items: center;
 }
-
 .closeBtn:hover { color: var(--text-1); }
-
 .form  { display: flex; flex-direction: column; gap: 1rem; }
 .row   { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .field { display: flex; flex-direction: column; gap: 0.35rem; }
-
-.label {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--text-2);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
+.label { font-size: 0.78rem; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; }
 .input {
-  padding: 0.65rem 0.85rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  font-size: 0.9rem;
-  color: var(--text-1);
-  background: var(--surface-2);
-  outline: none;
-  transition: border-color 0.15s, background 0.15s;
-  width: 100%;
-  font-family: inherit;
+  padding: 0.65rem 0.85rem; border: 1px solid var(--border); border-radius: 6px;
+  font-size: 0.9rem; color: var(--text-1); background: var(--surface-2); outline: none;
+  transition: border-color 0.15s, background 0.15s; width: 100%; font-family: inherit;
 }
-
 .input:focus { border-color: var(--accent); background: var(--surface); }
-.textarea    { resize: vertical; min-height: 72px; }
-
+.textarea    { resize: vertical; min-height: 60px; }
+.notesArea   { min-height: 90px; font-family: 'Courier New', monospace; font-size: 0.85rem; }
 .error {
-  background: var(--error-bg);
-  color: var(--error-text);
-  border: 1px solid var(--error-border);
-  border-radius: 6px;
-  padding: 0.55rem 0.85rem;
-  font-size: 0.85rem;
-  margin: 0;
+  background: var(--error-bg); color: var(--error-text);
+  border: 1px solid var(--error-border); border-radius: 6px; padding: 0.55rem 0.85rem; font-size: 0.85rem;
 }
-
+/* File upload */
+.fileArea {
+  display: flex; align-items: center; gap: 0.6rem;
+  border: 1.5px dashed var(--border); border-radius: 6px;
+  padding: 0.65rem 0.85rem; cursor: pointer; color: var(--text-3);
+  font-size: 0.875rem; transition: border-color 0.15s, color 0.15s;
+}
+.fileArea:hover { border-color: var(--accent); color: var(--text-1); }
+.fileList { list-style: none; margin-top: 0.4rem; display: flex; flex-direction: column; gap: 0.3rem; }
+.fileItem {
+  display: flex; align-items: center; gap: 0.4rem;
+  font-size: 0.82rem; color: var(--text-2);
+  background: var(--surface-2); border: 1px solid var(--border-light);
+  border-radius: 5px; padding: 0.3rem 0.7rem;
+}
+.fileItem span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fileRemove {
+  background: none; border: none; color: var(--text-3); cursor: pointer;
+  padding: 0; font-size: 0.9rem; display: flex; align-items: center; font-family: inherit;
+  transition: color 0.15s;
+}
+.fileRemove:hover { color: var(--error-text); }
 .actions { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 0.25rem; }
-
 .cancelBtn {
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 0.6rem 1.1rem;
-  font-size: 0.875rem;
-  color: var(--text-2);
-  cursor: pointer;
-  transition: background 0.15s;
-  font-family: inherit;
+  background: none; border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1.1rem;
+  font-size: 0.875rem; color: var(--text-2); cursor: pointer; transition: background 0.15s; font-family: inherit;
 }
-
 .cancelBtn:hover { background: var(--surface-2); }
-
 .submitBtn {
-  background: var(--accent);
-  color: var(--surface);
-  border: none;
-  border-radius: 6px;
-  padding: 0.6rem 1.25rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s;
-  font-family: inherit;
+  background: var(--accent); color: var(--surface); border: none; border-radius: 6px;
+  padding: 0.6rem 1.25rem; font-size: 0.875rem; font-weight: 600; cursor: pointer;
+  transition: background 0.15s; font-family: inherit;
 }
-
 .submitBtn:hover:not(:disabled) { background: var(--accent-hover); }
 .submitBtn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.noItems { font-size: 0.82rem; color: var(--text-4); font-style: italic; padding: 0.4rem 0; margin: 0; }
+.noItems { font-size: 0.82rem; color: var(--text-4); font-style: italic; padding: 0.5rem 0; margin: 0; }

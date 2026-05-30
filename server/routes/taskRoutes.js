@@ -1,21 +1,15 @@
 const express    = require('express');
 const router     = express.Router();
-const authMiddleware = require('../middleware/auth');
-const {
-  getTasks,
-  createTask,
-  toggleComplete,
-  updateTask,
-  deleteTask,
-} = require('../controllers/taskController');
+const auth       = require('../middleware/auth');
+const ctrl       = require('../controllers/taskController');
 
-// Tutte le route qui sotto richiedono un token JWT valido
-router.use(authMiddleware);
+router.use(auth);
 
-router.get('/',              getTasks);
-router.post('/',             createTask);
-router.patch('/:id/complete', toggleComplete);
-router.put('/:id',           updateTask);
-router.delete('/:id',        deleteTask);
+router.get('/',                ctrl.getTasks);
+router.post('/',               ctrl.createTask);
+router.patch('/reorder',       ctrl.reorderTasks);
+router.put('/:id',             ctrl.updateTask);
+router.patch('/:id/complete',  ctrl.toggleTask);
+router.delete('/:id',          ctrl.deleteTask);
 
 module.exports = router;

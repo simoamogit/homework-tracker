@@ -207,3 +207,24 @@
   .weekCount   { display: none; }
   .monthCell   { min-height: 40px; padding: 0.25rem; }
 }
+
+.clickable { cursor: pointer; }
+.detailHeader { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+.addDayBtn {
+  background: var(--accent); color: var(--surface); border: none;
+  border-radius: 5px; width: 24px; height: 24px; display: flex;
+  align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem;
+  transition: background 0.15s; font-family: inherit;
+}
+.addDayBtn:hover { background: var(--accent-hover); }
+.addCellBtn {
+  background: none; border: none; color: var(--text-4); cursor: pointer;
+  font-size: 0.8rem; padding: 0; display: flex; align-items: center;
+  font-family: inherit; transition: color 0.15s;
+}
+.addCellBtn:hover { color: var(--accent); }
+.addCellBtnMonth {
+  background: none; border: none; color: var(--text-4); cursor: pointer;
+  padding: 0; display: flex; align-items: center; font-family: inherit; transition: color 0.15s;
+}
+.addCellBtnMonth:hover { color: var(--accent); }

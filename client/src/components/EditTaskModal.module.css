@@ -108,3 +108,26 @@
 
 .submitBtn:hover:not(:disabled) { background: var(--accent-hover); }
 .submitBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.notesArea { min-height: 90px; font-family: 'Courier New', monospace; font-size: 0.85rem; }
+.fileArea {
+  display: flex; align-items: center; gap: 0.6rem;
+  border: 1.5px dashed var(--border); border-radius: 6px;
+  padding: 0.65rem 0.85rem; cursor: pointer; color: var(--text-3);
+  font-size: 0.875rem; transition: border-color 0.15s;
+}
+.fileArea:hover { border-color: var(--accent); }
+.fileList { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+.fileItem {
+  display: flex; align-items: center; gap: 0.4rem;
+  font-size: 0.82rem; color: var(--text-2);
+  background: var(--surface-2); border: 1px solid var(--border-light);
+  border-radius: 5px; padding: 0.3rem 0.7rem;
+}
+.fileLink { flex: 1; color: var(--text-2); text-decoration: none; overflow: hidden; text-overflow: ellipsis; }
+.fileLink:hover { text-decoration: underline; }
+.fileRemove {
+  background: none; border: none; color: var(--text-3); cursor: pointer;
+  padding: 0; font-size: 0.9rem; display: flex; align-items: center; font-family: inherit;
+}
+.fileRemove:hover { color: var(--error-text); }

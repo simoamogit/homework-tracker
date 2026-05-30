@@ -6,9 +6,7 @@ const API = axios.create({
 
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem('token');
-  if (token) {
-    req.headers.Authorization = `Bearer ${token}`;
-  }
+  if (token) req.headers.Authorization = `Bearer ${token}`;
   return req;
 });
 
@@ -22,9 +20,16 @@ export const createTask = (data)          => API.post('/tasks', data);
 export const updateTask = (id, data)      => API.put(`/tasks/${id}`, data);
 export const toggleTask = (id, completed) => API.patch(`/tasks/${id}/complete`, { completed });
 export const deleteTask = (id)            => API.delete(`/tasks/${id}`);
+export const reorderTasks = (orderedIds)  => API.patch('/tasks/reorder', { orderedIds });
+
+// Attachments
+export const uploadAttachment  = (taskId, formData) =>
+  API.post(`/tasks/${taskId}/attachments`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+export const deleteAttachment  = (taskId, attId)    =>
+  API.delete(`/tasks/${taskId}/attachments/${attId}`);
 
 // Settings
-export const getSettings    = ()                     => API.get('/settings');
-export const updateSettings = (subjects, categories) => API.put('/settings', { subjects, categories });
+export const getSettings    = ()                      => API.get('/settings');
+export const updateSettings = (subjects, categories)  => API.put('/settings', { subjects, categories });
 
 export default API;

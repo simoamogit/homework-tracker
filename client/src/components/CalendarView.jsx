@@ -20,35 +20,40 @@ function getMonday(date) {
   return d;
 }
 
-export default function CalendarView({ tasks, mode }) {
+export default function CalendarView({ tasks, mode, onAddTask }) {
   const [cursor,      setCursor]      = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(null);
-
   const today = new Date().toLocaleDateString('en-CA');
 
-  const byDate = useMemo(() => {
-    return tasks.reduce((acc, t) => {
-      const k = new Date(t.date).toLocaleDateString('en-CA');
-      if (!acc[k]) acc[k] = [];
-      acc[k].push(t);
-      return acc;
-    }, {});
-  }, [tasks]);
+  const byDate = useMemo(() => tasks.reduce((acc, t) => {
+    const k = new Date(t.date).toLocaleDateString('en-CA');
+    if (!acc[k]) acc[k] = [];
+    acc[k].push(t);
+    return acc;
+  }, {}), [tasks]);
 
   const toggleDay = (key) => setSelectedDay(s => s === key ? null : key);
 
   return mode === 'week'
-    ? <WeekView  cursor={cursor} setCursor={setCursor} byDate={byDate} today={today} selectedDay={selectedDay} toggleDay={toggleDay} />
-    : <MonthView cursor={cursor} setCursor={setCursor} byDate={byDate} today={today} selectedDay={selectedDay} toggleDay={toggleDay} />;
+    ? <WeekView  cursor={cursor} setCursor={setCursor} byDate={byDate} today={today} selectedDay={selectedDay} toggleDay={toggleDay} onAddTask={onAddTask} />
+    : <MonthView cursor={cursor} setCursor={setCursor} byDate={byDate} today={today} selectedDay={selectedDay} toggleDay={toggleDay} onAddTask={onAddTask} />;
 }
 
-function DayDetail({ dateKey, byDate }) {
+function DayDetail({ dateKey, byDate, onAddTask }) {
   const tasks = byDate[dateKey] || [];
   return (
     <div className={styles.detail}>
-      <p className={styles.detailTitle}>{formatDateLong(dateKey)}</p>
+      <div className={styles.detailHeader}>
+        <p className={styles.detailTitle}>{formatDateLong(dateKey)}</p>
+        {onAddTask && (
+          <button className={styles.addDayBtn} onClick={() => onAddTask(dateKey)}
+            title="Aggiungi compito per questo giorno">
+            <i className="bi bi-plus" />
+          </button>
+        )}
+      </div>
       {tasks.length === 0
-        ? <p className={styles.detailEmpty}>Nessun compito.</p>
+        ? <p className={styles.detailEmpty}>Nessun compito. Clicca + per aggiungerne uno.</p>
         : tasks.map(t => (
             <div key={t.id} className={`${styles.miniTask} ${t.completed ? styles.miniDone : ''}`}>
               <span className={styles.miniSubject}>{t.subject}</span>
@@ -60,21 +65,15 @@ function DayDetail({ dateKey, byDate }) {
   );
 }
 
-function WeekView({ cursor, setCursor, byDate, today, selectedDay, toggleDay }) {
+function WeekView({ cursor, setCursor, byDate, today, selectedDay, toggleDay, onAddTask }) {
   const monday = getMonday(cursor);
   const days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(monday);
     d.setDate(monday.getDate() + i);
     return d;
   });
-
   const label = `${days[0].getDate()} ${MONTHS_IT[days[0].getMonth()]} — ${days[6].getDate()} ${MONTHS_IT[days[6].getMonth()]} ${days[6].getFullYear()}`;
-
-  const shift = (n) => {
-    const d = new Date(cursor);
-    d.setDate(d.getDate() + n * 7);
-    setCursor(d);
-  };
+  const shift = (n) => { const d = new Date(cursor); d.setDate(d.getDate() + n * 7); setCursor(d); };
 
   return (
     <div className={styles.container}>
@@ -91,44 +90,34 @@ function WeekView({ cursor, setCursor, byDate, today, selectedDay, toggleDay }) 
           const isT  = key === today;
           const isSel = key === selectedDay;
           return (
-            <div
-              key={key}
-              className={`${styles.weekCell} ${isT ? styles.isToday : ''} ${isSel ? styles.isSelected : ''} ${list.length ? styles.hasTasks : ''}`}
-              onClick={() => list.length && toggleDay(key)}
-            >
+            <div key={key}
+              className={`${styles.weekCell} ${isT ? styles.isToday : ''} ${isSel ? styles.isSelected : ''} ${styles.clickable}`}
+              onClick={() => toggleDay(key)}>
               <span className={styles.weekDayName}>{DAYS_IT[d.getDay() === 0 ? 6 : d.getDay() - 1]}</span>
               <span className={styles.weekDayNum}>{d.getDate()}</span>
-              {list.length > 0 && (
-                <span className={styles.weekCount}>{done}/{list.length}</span>
-              )}
+              {list.length > 0
+                ? <span className={styles.weekCount}>{done}/{list.length}</span>
+                : <button className={styles.addCellBtn} onClick={e => { e.stopPropagation(); onAddTask?.(key); }}
+                    title="Aggiungi compito"><i className="bi bi-plus" /></button>
+              }
             </div>
           );
         })}
       </div>
-      {selectedDay && <DayDetail dateKey={selectedDay} byDate={byDate} />}
+      {selectedDay && <DayDetail dateKey={selectedDay} byDate={byDate} onAddTask={onAddTask} />}
     </div>
   );
 }
 
-function MonthView({ cursor, setCursor, byDate, today, selectedDay, toggleDay }) {
+function MonthView({ cursor, setCursor, byDate, today, selectedDay, toggleDay, onAddTask }) {
   const y = cursor.getFullYear();
   const m = cursor.getMonth();
-
-  const firstDay  = new Date(y, m, 1);
+  const firstDay   = new Date(y, m, 1);
   const daysInMonth = new Date(y, m + 1, 0).getDate();
   let startPad = firstDay.getDay() - 1;
   if (startPad < 0) startPad = 6;
-
-  const cells = [
-    ...Array(startPad).fill(null),
-    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
-  ];
-
-  const shift = (n) => {
-    const d = new Date(cursor);
-    d.setMonth(d.getMonth() + n);
-    setCursor(d);
-  };
+  const cells = [...Array(startPad).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)];
+  const shift = (n) => { const d = new Date(cursor); d.setMonth(d.getMonth() + n); setCursor(d); };
 
   return (
     <div className={styles.container}>
@@ -150,20 +139,23 @@ function MonthView({ cursor, setCursor, byDate, today, selectedDay, toggleDay })
           const isT   = key === today;
           const isSel = key === selectedDay;
           return (
-            <div
-              key={key}
+            <div key={key}
               className={`${styles.monthCell} ${styles.monthCellFilled} ${isT ? styles.isToday : ''} ${isSel ? styles.isSelected : ''}`}
-              onClick={() => toggleDay(key)}
-            >
+              onClick={() => toggleDay(key)}>
               <span className={styles.monthNum}>{day}</span>
-              {list.length > 0 && (
-                <span className={`${styles.dot} ${allDone ? styles.dotDone : styles.dotPending}`} />
-              )}
+              {list.length > 0
+                ? <span className={`${styles.dot} ${allDone ? styles.dotDone : styles.dotPending}`} />
+                : <button className={styles.addCellBtnMonth}
+                    onClick={e => { e.stopPropagation(); onAddTask?.(key); }}
+                    title="Aggiungi compito">
+                    <i className="bi bi-plus" style={{ fontSize: '0.6rem' }} />
+                  </button>
+              }
             </div>
           );
         })}
       </div>
-      {selectedDay && <DayDetail dateKey={selectedDay} byDate={byDate} />}
+      {selectedDay && <DayDetail dateKey={selectedDay} byDate={byDate} onAddTask={onAddTask} />}
     </div>
   );
 }
