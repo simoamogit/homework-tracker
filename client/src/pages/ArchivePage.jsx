@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { getTasks } from '../services/api';
-import Navbar        from '../components/Navbar';
-import TaskItem      from '../components/TaskItem';
+import Navbar from '../components/Navbar';
+import TaskItem from '../components/TaskItem';
 import SkeletonLoader from '../components/SkeletonLoader';
-import styles        from './ArchivePage.module.css';
+import styles from './ArchivePage.module.css';
 
 function formatDate(dateStr) {
   const [y, m, d] = dateStr.split('-').map(Number);
@@ -13,10 +13,10 @@ function formatDate(dateStr) {
 }
 
 export default function ArchivePage() {
-  const [tasks,   setTasks]   = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState('');
-  const [search,  setSearch]  = useState('');
+  const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
 
   const today = new Date().toLocaleDateString('en-CA');
 
@@ -34,8 +34,8 @@ export default function ArchivePage() {
       if (!search.trim()) return true;
       const q = search.toLowerCase();
       return t.subject.toLowerCase().includes(q) ||
-             t.category.toLowerCase().includes(q) ||
-             t.description.toLowerCase().includes(q);
+        t.category.toLowerCase().includes(q) ||
+        t.description.toLowerCase().includes(q);
     });
   }, [tasks, today, search]);
 
@@ -53,7 +53,7 @@ export default function ArchivePage() {
   const sortedDates = Object.keys(grouped).sort().reverse();
 
   const handleUpdate = upd => setTasks(p => p.map(t => t.id === upd.id ? upd : t));
-  const handleDelete = id  => setTasks(p => p.filter(t => t.id !== id));
+  const handleDelete = id => setTasks(p => p.filter(t => t.id !== id));
 
   return (
     <div className={styles.page}>
@@ -71,7 +71,7 @@ export default function ArchivePage() {
         </div>
 
         {loading && <SkeletonLoader />}
-        {error   && <p className={styles.errorMsg}>{error}</p>}
+        {error && <p className={styles.errorMsg}>{error}</p>}
 
         {!loading && !error && sortedDates.length === 0 && (
           <div className={styles.empty}>
@@ -85,11 +85,11 @@ export default function ArchivePage() {
         )}
 
         {!loading && !error && sortedDates.map(dateKey => {
-          const dayTasks  = grouped[dateKey];
-          const done      = dayTasks.filter(t => t.completed).length;
-          const total     = dayTasks.length;
-          const percent   = Math.round((done / total) * 100);
-          const allDone   = done === total;
+          const dayTasks = grouped[dateKey];
+          const done = dayTasks.filter(t => t.completed).length;
+          const total = dayTasks.length;
+          const percent = Math.round((done / total) * 100);
+          const allDone = done === total;
           return (
             <section key={dateKey} className={styles.group}>
               <div className={styles.groupHeader}>
@@ -107,7 +107,7 @@ export default function ArchivePage() {
                     key={task.id}
                     task={task}
                     onUpdate={handleUpdate}
-                    onDelete={handleDelete}
+                    onDeleteRequest={handleDelete}  {/* era onDelete */}
                   />
                 ))}
               </div>

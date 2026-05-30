@@ -5,11 +5,13 @@ import styles from './TaskItem.module.css';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
-marked.setOptions({ breaks: true, gfm: true });
+// marked.use invece di marked.setOptions (rimosso in v12+)
+marked.use({ breaks: true, gfm: true });
 
 function NotesPreview({ notes }) {
   if (!notes?.trim()) return null;
-  const html = DOMPurify.sanitize(marked.parse(notes));
+  const parsed = marked.parse(notes);
+  const html   = DOMPurify.sanitize(typeof parsed === 'string' ? parsed : '');
   return (
     <div
       className={styles.notes}
