@@ -107,7 +107,7 @@ export default function ArchivePage() {
                     key={task.id}
                     task={task}
                     onUpdate={handleUpdate}
-                    onDeleteRequest={handleDelete}  {/* era onDelete */}
+                    onDeleteRequest={handleDelete}
                   />
                 ))}
               </div>
