@@ -18,7 +18,6 @@ const getAllTasks = async (userId) => {
 };
 
 const createTask = async (userId, { date, subject, category, description, notes = '' }) => {
-  // sort_order = max + 1 per quel giorno
   const maxRes = await pool.query(
     'SELECT COALESCE(MAX(sort_order), 0) + 1 AS next FROM tasks WHERE user_id = $1 AND date = $2',
     [userId, date]
@@ -36,7 +35,7 @@ const createTask = async (userId, { date, subject, category, description, notes 
 const updateTask = async (taskId, userId, { date, subject, category, description, notes = '' }) => {
   const result = await pool.query(
     `UPDATE tasks
-     SET date=$1, subject=$2, category=$3, description=$4, notes=$5, updated_at=NOW()
+     SET date=$1, subject=$2, category=$3, description=$4, notes=$5
      WHERE id=$6 AND user_id=$7 RETURNING *`,
     [date, subject, category, description, notes, taskId, userId]
   );
@@ -51,7 +50,7 @@ const updateTask = async (taskId, userId, { date, subject, category, description
 
 const toggleTask = async (taskId, userId, completed) => {
   const result = await pool.query(
-    'UPDATE tasks SET completed=$1, updated_at=NOW() WHERE id=$2 AND user_id=$3 RETURNING *',
+    'UPDATE tasks SET completed=$1 WHERE id=$2 AND user_id=$3 RETURNING *',
     [completed, taskId, userId]
   );
   if (!result.rows.length) return null;

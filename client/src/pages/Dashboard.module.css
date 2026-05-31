@@ -244,29 +244,3 @@
 @media (max-width: 480px) {
   .main { padding: 1.25rem 1rem; }
 }
-
-/* Drag handle */
-.taskRow {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.4rem;
-}
-
-.dragHandle {
-  padding-top: 0.95rem;
-  color: var(--text-4);
-  cursor: grab;
-  font-size: 0.85rem;
-  flex-shrink: 0;
-  touch-action: none;
-}
-
-.dragHandle:active { cursor: grabbing; }
-
-/* Empty state icon */
-.emptyIcon {
-  font-size: 2.5rem;
-  color: var(--text-4);
-  display: block;
-  margin-bottom: 0.75rem;
-}

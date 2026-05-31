@@ -228,3 +228,73 @@
   padding: 0; display: flex; align-items: center; font-family: inherit; transition: color 0.15s;
 }
 .addCellBtnMonth:hover { color: var(--accent); }
+
+/* Day detail interactive */
+.detailTasks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.miniTask {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 5px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-light);
+  transition: background 0.15s;
+}
+
+.miniTask:hover { background: var(--border-light); }
+
+.miniDone { opacity: 0.5; }
+.miniDone .miniDesc { text-decoration: line-through; }
+
+.miniCheck {
+  accent-color: var(--accent) !important;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.miniContent {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+
+.miniMeta {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-1);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.miniDesc {
+  font-size: 0.83rem;
+  color: var(--text-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.miniEditBtn {
+  background: none;
+  border: none;
+  color: var(--text-4);
+  cursor: pointer;
+  padding: 0.2rem 0.3rem;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  transition: color 0.15s, background 0.15s;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+
+.miniEditBtn:hover { color: var(--text-1); background: var(--surface); }

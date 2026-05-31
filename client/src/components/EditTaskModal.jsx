@@ -3,11 +3,14 @@ import { updateTask, getSettings, uploadAttachment, deleteAttachment } from '../
 import styles from './EditTaskModal.module.css';
 
 export default function EditTaskModal({ task, onClose, onUpdate }) {
+  // Unisci descrizione + note in un unico campo
+  const initialContent = [task.description, task.notes?.trim() ? task.notes : null]
+    .filter(Boolean).join('\n\n');
+
   const [date,        setDate]        = useState(() => new Date(task.date).toLocaleDateString('en-CA'));
   const [subject,     setSubject]     = useState(task.subject);
   const [category,    setCategory]    = useState(task.category);
-  const [description, setDescription] = useState(task.description);
-  const [notes,       setNotes]       = useState(task.notes || '');
+  const [description, setDescription] = useState(initialContent);
   const [subjects,    setSubjects]    = useState([]);
   const [categories,  setCategories]  = useState([]);
   const [error,       setError]       = useState('');
@@ -18,12 +21,10 @@ export default function EditTaskModal({ task, onClose, onUpdate }) {
 
   useEffect(() => {
     getSettings().then(res => {
-      setSubjects((res.data.subjects || []).includes(task.subject)
-        ? res.data.subjects
-        : [...(res.data.subjects || []), task.subject]);
-      setCategories((res.data.categories || []).includes(task.category)
-        ? res.data.categories
-        : [...(res.data.categories || []), task.category]);
+      const subs = res.data.subjects || [];
+      const cats = res.data.categories || [];
+      setSubjects(subs.includes(task.subject) ? subs : [...subs, task.subject]);
+      setCategories(cats.includes(task.category) ? cats : [...cats, task.category]);
     }).catch(() => {});
   }, [task.subject, task.category]);
 
@@ -35,7 +36,11 @@ export default function EditTaskModal({ task, onClose, onUpdate }) {
     }
     setLoading(true);
     try {
-      const res = await updateTask(task.id, { date, subject, category, description: description.trim(), notes });
+      const res = await updateTask(task.id, {
+        date, subject, category,
+        description: description.trim(),
+        notes: '',
+      });
       const updatedTask = { ...res.data, attachments };
 
       for (const file of newFiles) {
@@ -68,7 +73,9 @@ export default function EditTaskModal({ task, onClose, onUpdate }) {
       <div className={styles.modal} onClick={e => e.stopPropagation()}>
         <div className={styles.header}>
           <h3 className={styles.title}>Modifica compito</h3>
-          <button className={styles.closeBtn} onClick={onClose}><i className="bi bi-x-lg" /></button>
+          <button className={styles.closeBtn} onClick={onClose}>
+            <i className="bi bi-x-lg" />
+          </button>
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
@@ -98,20 +105,16 @@ export default function EditTaskModal({ task, onClose, onUpdate }) {
           </div>
 
           <div className={styles.field}>
-            <label className={styles.label}>Descrizione</label>
-            <textarea className={`${styles.input} ${styles.textarea}`}
-              value={description} onChange={e => setDescription(e.target.value)}
-              rows={2} required />
+            <label className={styles.label}>Descrizione e note (Markdown)</label>
+            <textarea
+              className={`${styles.input} ${styles.textarea}`}
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              rows={7}
+              required
+            />
           </div>
 
-          <div className={styles.field}>
-            <label className={styles.label}>Note (Markdown)</label>
-            <textarea className={`${styles.input} ${styles.textarea} ${styles.notesArea}`}
-              placeholder="Note, link, dettagli..."
-              value={notes} onChange={e => setNotes(e.target.value)} rows={4} />
-          </div>
-
-          {/* Allegati esistenti */}
           {attachments.length > 0 && (
             <div className={styles.field}>
               <label className={styles.label}>Allegati salvati</label>
@@ -132,7 +135,6 @@ export default function EditTaskModal({ task, onClose, onUpdate }) {
             </div>
           )}
 
-          {/* Nuovi allegati */}
           <div className={styles.field}>
             <label className={styles.label}>Aggiungi allegati</label>
             <div className={styles.fileArea} onClick={() => fileRef.current?.click()}>

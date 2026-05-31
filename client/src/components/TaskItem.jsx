@@ -5,25 +5,46 @@ import styles from './TaskItem.module.css';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
-// marked.use invece di marked.setOptions (rimosso in v12+)
 marked.use({ breaks: true, gfm: true });
 
-function NotesPreview({ notes }) {
-  if (!notes?.trim()) return null;
-  const parsed = marked.parse(notes);
-  const html   = DOMPurify.sanitize(typeof parsed === 'string' ? parsed : '');
+// Thumbnail Cloudinary per immagini
+function thumbUrl(url) {
+  return url.replace('/upload/', '/upload/w_120,h_90,c_fill,q_auto/');
+}
+
+function AttachmentItem({ att }) {
+  const isImage = att.mime_type?.startsWith('image/');
+  const isPdf   = att.mime_type === 'application/pdf';
+
+  if (isImage) {
+    return (
+      <a href={att.url} target="_blank" rel="noopener noreferrer"
+        className={styles.attachmentImgLink} title={att.filename}>
+        <img src={thumbUrl(att.url)} alt={att.filename} className={styles.attachmentThumb} />
+      </a>
+    );
+  }
+
   return (
-    <div
-      className={styles.notes}
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+    <a href={att.url} target="_blank" rel="noopener noreferrer"
+      className={styles.attachmentLink}>
+      <i className={`bi ${isPdf ? 'bi-file-pdf' : 'bi-paperclip'}`} />
+      <span>{att.filename}</span>
+    </a>
   );
 }
 
+function MarkdownContent({ description, notes }) {
+  const content = [description, notes?.trim() ? notes : null].filter(Boolean).join('\n\n');
+  if (!content?.trim()) return null;
+  const parsed = marked.parse(content);
+  const html   = DOMPurify.sanitize(typeof parsed === 'string' ? parsed : '');
+  return <div className={styles.mdContent} dangerouslySetInnerHTML={{ __html: html }} />;
+}
+
 export default function TaskItem({ task, onUpdate, onDeleteRequest }) {
-  const [loading, setLoading] = useState(false);
+  const [loading,  setLoading]  = useState(false);
   const [showEdit, setShowEdit] = useState(false);
-  const [expanded, setExpanded] = useState(false);
 
   const handleToggle = async () => {
     if (loading) return;
@@ -38,9 +59,7 @@ export default function TaskItem({ task, onUpdate, onDeleteRequest }) {
     }
   };
 
-  const hasNotes = task.notes?.trim().length > 0;
   const hasAttachments = task.attachments?.length > 0;
-  const hasExtra = hasNotes || hasAttachments;
 
   return (
     <>
@@ -51,7 +70,8 @@ export default function TaskItem({ task, onUpdate, onDeleteRequest }) {
         tabIndex={0}
         onKeyDown={e => e.key === 'Enter' && handleToggle()}
       >
-        <div className="form-check" onClick={e => e.stopPropagation()} style={{ marginTop: '2px', flexShrink: 0 }}>
+        <div className="form-check" onClick={e => e.stopPropagation()}
+          style={{ marginTop: '2px', flexShrink: 0 }}>
           <input
             className={`form-check-input ${styles.check}`}
             type="checkbox"
@@ -68,39 +88,12 @@ export default function TaskItem({ task, onUpdate, onDeleteRequest }) {
             <span className={styles.separator}>·</span>
             <span className={styles.category}>{task.category}</span>
           </div>
-          <p className={styles.description}>{task.description}</p>
 
-          {/* Note espandibili */}
-          {hasExtra && (
-            <button
-              className={styles.expandBtn}
-              onClick={e => { e.stopPropagation(); setExpanded(v => !v); }}
-            >
-              <i className={`bi ${expanded ? 'bi-chevron-up' : 'bi-chevron-down'}`} />
-              {hasNotes && <span>Note</span>}
-              {hasAttachments && <span>{task.attachments.length} allegat{task.attachments.length > 1 ? 'i' : 'o'}</span>}
-            </button>
-          )}
+          <MarkdownContent description={task.description} notes={task.notes} />
 
-          {expanded && (
-            <div className={styles.expandedArea} onClick={e => e.stopPropagation()}>
-              {hasNotes && <NotesPreview notes={task.notes} />}
-              {hasAttachments && (
-                <div className={styles.attachmentList}>
-                  {task.attachments.map(a => (
-                    <a
-                      key={a.id}
-                      href={a.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.attachmentLink}
-                    >
-                      <i className="bi bi-paperclip" />
-                      {a.filename}
-                    </a>
-                  ))}
-                </div>
-              )}
+          {hasAttachments && (
+            <div className={styles.attachmentList} onClick={e => e.stopPropagation()}>
+              {task.attachments.map(a => <AttachmentItem key={a.id} att={a} />)}
             </div>
           )}
         </div>
