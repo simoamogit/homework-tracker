@@ -1,7 +1,11 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'https://homework-tracker-oano.onrender.com/api',
+  // In sviluppo locale → Vite proxy → localhost:5000
+  // In produzione (Netlify) → URL Render diretto
+  baseURL: import.meta.env.DEV
+    ? '/api'
+    : 'https://homework-tracker-oano.onrender.com/api',
 });
 
 API.interceptors.request.use((req) => {
@@ -23,13 +27,13 @@ export const deleteTask = (id)            => API.delete(`/tasks/${id}`);
 export const reorderTasks = (orderedIds)  => API.patch('/tasks/reorder', { orderedIds });
 
 // Attachments
-export const uploadAttachment  = (taskId, formData) =>
+export const uploadAttachment = (taskId, formData) =>
   API.post(`/tasks/${taskId}/attachments`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-export const deleteAttachment  = (taskId, attId)    =>
+export const deleteAttachment = (taskId, attId) =>
   API.delete(`/tasks/${taskId}/attachments/${attId}`);
 
 // Settings
-export const getSettings    = ()                      => API.get('/settings');
-export const updateSettings = (subjects, categories)  => API.put('/settings', { subjects, categories });
+export const getSettings    = ()                     => API.get('/settings');
+export const updateSettings = (subjects, categories) => API.put('/settings', { subjects, categories });
 
 export default API;

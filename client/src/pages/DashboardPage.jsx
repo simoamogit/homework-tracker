@@ -1,14 +1,14 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getTasks, deleteTask } from '../services/api';
-import Navbar        from '../components/Navbar';
-import TaskItem      from '../components/TaskItem';
-import AddTaskForm   from '../components/AddTaskForm';
-import CalendarView  from '../components/CalendarView';
+import Navbar         from '../components/Navbar';
+import TaskItem       from '../components/TaskItem';
+import AddTaskForm    from '../components/AddTaskForm';
+import CalendarView   from '../components/CalendarView';
 import SkeletonLoader from '../components/SkeletonLoader';
-import UndoSnackbar  from '../components/UndoSnackbar';
-import styles        from './Dashboard.module.css';
-import API           from '../services/api';
+import UndoSnackbar   from '../components/UndoSnackbar';
+import styles         from './Dashboard.module.css';
+import API            from '../services/api';
 
 function formatDate(dateStr) {
   const [y, m, d] = dateStr.split('-').map(Number);
@@ -19,7 +19,9 @@ function formatDate(dateStr) {
 
 export default function DashboardPage() {
   const queryClient = useQueryClient();
-  const { data: allTasks = [], isLoading, error } = useQuery({
+
+  // ── FIX: usa `data` (non `data = []`) come dipendenza dell'useEffect ──
+  const { data, isLoading, error } = useQuery({
     queryKey: ['tasks'],
     queryFn:  () => getTasks().then(r => r.data),
   });
@@ -32,15 +34,21 @@ export default function DashboardPage() {
   const [undoQueue,         setUndoQueue]         = useState([]);
   const filtriRef = useRef(null);
 
-  useEffect(() => { setLocalTasks(allTasks); }, [allTasks]);
+  // Sincronizza dati dal server → stato locale
+  // `data` da React Query è undefined durante il caricamento (referenza stabile),
+  // poi diventa l'array dal server (structural sharing: stessa referenza se i dati non cambiano).
+  // Nessun loop infinito.
+  useEffect(() => {
+    if (data) setLocalTasks(data);
+  }, [data]);
 
-  // Keep-alive Render
+  // Keep-alive Render (ogni 14 min)
   useEffect(() => {
     const id = setInterval(() => API.get('/health').catch(() => {}), 14 * 60 * 1000);
     return () => clearInterval(id);
   }, []);
 
-  // Close filtri on outside click
+  // Chiudi pannello filtri al click esterno
   useEffect(() => {
     const handler = (e) => {
       if (filtriRef.current && !filtriRef.current.contains(e.target)) setFiltriOpen(false);
@@ -82,10 +90,11 @@ export default function DashboardPage() {
     return !grouped[key].every(t => t.completed);
   });
 
-  const handleTaskAdded   = t   => { setLocalTasks(p => [...p, t]); queryClient.invalidateQueries(['tasks']); };
+  // Handlers CRUD
+  const handleTaskAdded   = t   => { setLocalTasks(p => [...p, t]); queryClient.invalidateQueries({ queryKey: ['tasks'] }); };
   const handleTaskUpdated = upd => setLocalTasks(p => p.map(t => t.id === upd.id ? upd : t));
 
-  // Undo delete
+  // Undo delete (5 secondi)
   const handleDeleteRequest = useCallback((taskId) => {
     const task = localTasks.find(t => t.id === taskId);
     if (!task) return;
@@ -95,7 +104,7 @@ export default function DashboardPage() {
     const timer = setTimeout(async () => {
       try {
         await deleteTask(taskId);
-        queryClient.invalidateQueries(['tasks']);
+        queryClient.invalidateQueries({ queryKey: ['tasks'] });
       } catch {
         setLocalTasks(p => [...p, task]);
       }
@@ -124,9 +133,8 @@ export default function DashboardPage() {
       <Navbar />
       <main className={styles.main}>
 
-        {/* Top bar */}
+        {/* Barra in alto */}
         <div className={styles.topBar}>
-          {/* Filtri */}
           <div className={styles.filtriWrap} ref={filtriRef}>
             <button
               className={`${styles.filtriBtn} ${filtriOpen ? styles.filtriOpen : ''}`}
@@ -184,7 +192,7 @@ export default function DashboardPage() {
         {isLoading && <SkeletonLoader />}
         {error     && <p className={styles.errorMsg}>Impossibile caricare i compiti.</p>}
 
-        {/* Calendar views */}
+        {/* Vista calendario */}
         {!isLoading && !error && (view === 'week' || view === 'month') && (
           <CalendarView
             tasks={localTasks}
@@ -194,7 +202,7 @@ export default function DashboardPage() {
           />
         )}
 
-        {/* List view — empty state */}
+        {/* Vista lista — stato vuoto */}
         {!isLoading && !error && view === 'list' && sortedDates.length === 0 && (
           <div className={styles.empty}>
             <i className={`bi bi-inbox ${styles.emptyIcon}`} />
@@ -209,7 +217,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* List view — task groups */}
+        {/* Vista lista — gruppi per data */}
         {!isLoading && !error && view === 'list' && sortedDates.map(dateKey => {
           const dayTasks  = grouped[dateKey];
           const doneCount = dayTasks.filter(t => t.completed).length;
@@ -243,6 +251,7 @@ export default function DashboardPage() {
         })}
       </main>
 
+      {/* Snackbar undo */}
       {undoQueue.length > 0 && (
         <UndoSnackbar
           key={undoQueue[undoQueue.length - 1].id}
