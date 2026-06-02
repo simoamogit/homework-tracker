@@ -50,7 +50,11 @@ const updateTask = async (taskId, userId, { date, subject, category, description
 
 const toggleTask = async (taskId, userId, completed) => {
   const result = await pool.query(
-    'UPDATE tasks SET completed=$1 WHERE id=$2 AND user_id=$3 RETURNING *',
+    `UPDATE tasks
+     SET completed    = $1,
+         completed_at = CASE WHEN $1 THEN NOW() ELSE NULL END
+     WHERE id=$2 AND user_id=$3
+     RETURNING *`,
     [completed, taskId, userId]
   );
   if (!result.rows.length) return null;

@@ -131,3 +131,145 @@
   padding: 0; font-size: 0.9rem; display: flex; align-items: center; font-family: inherit;
 }
 .fileRemove:hover { color: var(--error-text); }
+/* Drop zone */
+.fileArea {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border: 1.5px dashed var(--border);
+  border-radius: 6px;
+  padding: 0.75rem 0.85rem;
+  cursor: pointer;
+  color: var(--text-3);
+  font-size: 0.875rem;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  user-select: none;
+}
+
+.fileArea:hover { border-color: var(--accent); color: var(--text-1); }
+
+.fileAreaDrag {
+  border-color: var(--accent);
+  background: var(--surface-2);
+  color: var(--text-1);
+  border-style: solid;
+}
+
+.fileSize { color: var(--text-4); font-size: 0.75rem; margin-left: auto; }
+
+/* Label con bottone fullscreen */
+.labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+
+.fsBtn {
+  background: none;
+  border: none;
+  color: var(--text-4);
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0.15rem 0.3rem;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+}
+
+.fsBtn:hover { color: var(--text-1); background: var(--border-light); }
+
+/* Fullscreen overlay */
+.fsOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.fsModal {
+  background: var(--surface);
+  border-radius: 10px;
+  width: 100%;
+  max-width: 900px;
+  height: 85vh;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.fsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--surface-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.fsClose {
+  background: none;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  transition: color 0.15s;
+  font-family: inherit;
+}
+
+.fsClose:hover { color: var(--text-1); }
+
+.fsTextarea {
+  flex: 1;
+  resize: none;
+  border: none;
+  outline: none;
+  padding: 1.25rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--text-1);
+  background: var(--surface);
+  width: 100%;
+}
+
+.fsFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 1rem;
+  border-top: 1px solid var(--border-light);
+  background: var(--surface-2);
+}
+
+.fsHint { font-size: 0.78rem; color: var(--text-4); }
+
+.fsDone {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--accent);
+  color: var(--surface);
+  border: none;
+  border-radius: 6px;
+  padding: 0.45rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+
+.fsDone:hover { opacity: 0.85; }

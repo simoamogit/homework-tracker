@@ -1,3 +1,4 @@
+/* --- Contenitore Principale --- */
 .item {
   display: flex;
   align-items: flex-start;
@@ -14,6 +15,7 @@
 .item:hover { background: var(--surface-2); }
 .item:hover .actions { opacity: 1; }
 .item.busy { opacity: 0.6; pointer-events: none; }
+
 .completed { opacity: 0.45; }
 .completed .mdContent { text-decoration: line-through; }
 
@@ -21,6 +23,7 @@
 
 .content { flex: 1; min-width: 0; }
 
+/* --- Meta Info (Header dell'item) --- */
 .meta {
   display: flex;
   align-items: center;
@@ -29,24 +32,25 @@
   margin-bottom: 0.35rem;
 }
 
-.subject {
+.subject, .category {
   font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.subject {
   font-weight: 700;
   color: var(--text-1);
-  text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.category {
+  color: var(--text-3);
+  letter-spacing: 0.4px;
 }
 
 .separator { color: var(--text-4); font-size: 0.8rem; }
 
-.category {
-  font-size: 0.78rem;
-  color: var(--text-3);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-
-/* Markdown rendered content */
+/* --- Markdown Content --- */
 .mdContent {
   font-size: 0.9rem;
   color: var(--text-2);
@@ -54,7 +58,7 @@
   word-break: break-word;
 }
 
-.mdContent p  { margin: 0 0 0.3rem; }
+.mdContent p { margin: 0 0 0.3rem; }
 .mdContent p:last-child { margin-bottom: 0; }
 .mdContent h1, .mdContent h2, .mdContent h3 {
   font-size: 0.92rem;
@@ -71,7 +75,7 @@
 }
 .mdContent a { color: var(--accent); }
 
-/* Attachments */
+/* --- Allegati (Refactored) --- */
 .attachmentList {
   display: flex;
   flex-wrap: wrap;
@@ -79,24 +83,9 @@
   margin-top: 0.5rem;
 }
 
-.attachmentImgLink {
-  display: block;
-  border-radius: 5px;
-  overflow: hidden;
-  border: 1px solid var(--border-light);
-  transition: opacity 0.15s;
-}
-
-.attachmentImgLink:hover { opacity: 0.85; }
-
-.attachmentThumb {
-  width: 80px;
-  height: 60px;
-  object-fit: cover;
-  display: block;
-}
-
-.attachmentLink {
+/* Accorpamento stili comuni per link e bottoni allegato */
+.attachmentLink, 
+.attachmentBtn {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
@@ -107,19 +96,46 @@
   border-radius: 5px;
   padding: 0.25rem 0.6rem;
   text-decoration: none;
+  cursor: pointer;
   transition: background 0.15s;
+  font-family: inherit;
   max-width: 200px;
 }
 
-.attachmentLink span {
+.attachmentLink span, 
+.attachmentBtn span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.attachmentLink:hover { background: var(--border-light); }
+.attachmentLink:hover, 
+.attachmentBtn:hover { background: var(--border-light); }
 
-/* Actions */
+/* Thumbnail e Immagini */
+.attachmentImgLink,
+.attachmentImgBtn {
+  display: block;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  transition: opacity 0.15s;
+  padding: 0; /* reset per il bottone */
+  cursor: pointer;
+}
+
+.attachmentThumb {
+  width: 80px;
+  height: 60px;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.15s;
+}
+
+.attachmentImgLink:hover,
+.attachmentImgBtn:hover .attachmentThumb { opacity: 0.85; }
+
+/* --- Azioni (Bottoni di controllo) --- */
 .actions {
   display: flex;
   align-items: center;

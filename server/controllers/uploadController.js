@@ -1,54 +1,67 @@
-const cloudinary = require('../config/cloudinary');
-const pool       = require('../config/db');
-const multer     = require('multer');
-const { Readable } = require('stream');
+const multer = require('multer');
+const path = require('path');
+const pool = require('../config/db');
 
-const storage = multer.memoryStorage();
-const upload  = multer({
-  storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+// Configura multer per salvare i file nella cartella 'uploads'
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, '..', 'uploads'));
+  },
+  filename: (req, file, cb) => {
+    // Nome univoco: timestamp + nome originale sanitizzato
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const safeName = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+    cb(null, uniqueSuffix + '-' + safeName);
+  }
 });
 
+const upload = multer({
+  storage,
+  limits: { fileSize: 50 * 1024 * 1024 } // 50 MB
+});
+
+// POST /api/tasks/:taskId/attachments
 const uploadAttachment = [
   upload.single('file'),
   async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'Nessun file ricevuto.' });
 
-    const taskId = req.params.taskId;
+    const { taskId } = req.params;
 
     // Verifica che il task appartenga all'utente
-    const taskCheck = await pool.query(
+    const check = await pool.query(
       'SELECT id FROM tasks WHERE id=$1 AND user_id=$2',
       [taskId, req.user.id]
     );
-    if (!taskCheck.rows.length) {
-      return res.status(404).json({ error: 'Compito non trovato.' });
-    }
+    if (!check.rows.length) return res.status(404).json({ error: 'Compito non trovato.' });
 
     try {
-      // Upload su Cloudinary via stream
-      const uploadResult = await new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: `imieicompiti/${req.user.id}`, resource_type: 'auto' },
-          (error, result) => (error ? reject(error) : resolve(result))
-        );
-        Readable.from(req.file.buffer).pipe(stream);
-      });
+      // Costruisci l'URL pubblico (dovrai servire la cartella uploads via Express)
+      const url = `/uploads/${req.file.filename}`;
 
       const result = await pool.query(
-        `INSERT INTO task_attachments (task_id, filename, url, public_id, size, mime_type)
+        `INSERT INTO task_attachments
+           (task_id, filename, url, public_id, size, mime_type)
          VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-        [taskId, req.file.originalname, uploadResult.secure_url, uploadResult.public_id,
-         req.file.size, req.file.mimetype]
+        [
+          taskId,
+          req.file.originalname,
+          url,
+          req.file.filename, // usiamo il nome salvato come public_id per riferimento
+          req.file.size,
+          req.file.mimetype
+        ]
       );
+
       res.status(201).json(result.rows[0]);
     } catch (err) {
-      console.error('Cloudinary upload error:', err);
+      console.error('Upload error:', err);
       res.status(500).json({ error: 'Errore durante il caricamento.' });
     }
   }
 ];
 
+// DELETE /api/tasks/:taskId/attachments/:attId
 const deleteAttachment = async (req, res) => {
   try {
     const att = await pool.query(
@@ -59,7 +72,17 @@ const deleteAttachment = async (req, res) => {
     );
     if (!att.rows.length) return res.status(404).json({ error: 'Allegato non trovato.' });
 
-    await cloudinary.uploader.destroy(att.rows[0].public_id, { resource_type: 'auto' });
+    const { public_id } = att.rows[0];
+
+    // Cancella il file fisico
+    const fs = require('fs');
+    const filePath = path.join(__dirname, '..', 'uploads', public_id);
+    try {
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    } catch (err) {
+      console.error('Errore cancellazione file:', err.message);
+    }
+
     await pool.query('DELETE FROM task_attachments WHERE id=$1', [req.params.attId]);
     res.json({ message: 'Allegato eliminato.' });
   } catch (err) {

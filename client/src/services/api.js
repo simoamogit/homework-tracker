@@ -3,9 +3,7 @@ import axios from 'axios';
 const API = axios.create({
   // In sviluppo locale → Vite proxy → localhost:5000
   // In produzione (Netlify) → URL Render diretto
-  baseURL: import.meta.env.DEV
-    ? '/api'
-    : 'https://homework-tracker-oano.onrender.com/api',
+  baseURL: import.meta.env.DEV ? '/api' : 'https://homework-tracker-oano.onrender.com/api',
 });
 
 API.interceptors.request.use((req) => {
