@@ -1,23 +1,26 @@
 const multer = require('multer');
-const path = require('path');
-const pool = require('../config/db');
+const path   = require('path');
+const fs     = require('fs');
+const pool   = require('../config/db');
 
-// Configura multer per salvare i file nella cartella 'uploads'
+const uploadsDir = path.join(__dirname, '..', 'uploads');
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '..', 'uploads'));
+    // Crea la cartella se non esiste
+    if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+    cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {
-    // Nome univoco: timestamp + nome originale sanitizzato
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
     const safeName = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_');
-    cb(null, uniqueSuffix + '-' + safeName);
-  }
+    cb(null, `${uniqueSuffix}-${safeName}`);
+  },
 });
 
 const upload = multer({
   storage,
-  limits: { fileSize: 50 * 1024 * 1024 } // 50 MB
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB
 });
 
 // POST /api/tasks/:taskId/attachments
@@ -28,7 +31,6 @@ const uploadAttachment = [
 
     const { taskId } = req.params;
 
-    // Verifica che il task appartenga all'utente
     const check = await pool.query(
       'SELECT id FROM tasks WHERE id=$1 AND user_id=$2',
       [taskId, req.user.id]
@@ -36,7 +38,7 @@ const uploadAttachment = [
     if (!check.rows.length) return res.status(404).json({ error: 'Compito non trovato.' });
 
     try {
-      // Costruisci l'URL pubblico (dovrai servire la cartella uploads via Express)
+      // URL relativo — il frontend costruisce l'URL assoluto con BACKEND_URL
       const url = `/uploads/${req.file.filename}`;
 
       const result = await pool.query(
@@ -47,9 +49,9 @@ const uploadAttachment = [
           taskId,
           req.file.originalname,
           url,
-          req.file.filename, // usiamo il nome salvato come public_id per riferimento
+          req.file.filename, // nome file su disco, usato per cancellazione
           req.file.size,
-          req.file.mimetype
+          req.file.mimetype,
         ]
       );
 
@@ -58,7 +60,7 @@ const uploadAttachment = [
       console.error('Upload error:', err);
       res.status(500).json({ error: 'Errore durante il caricamento.' });
     }
-  }
+  },
 ];
 
 // DELETE /api/tasks/:taskId/attachments/:attId
@@ -72,15 +74,12 @@ const deleteAttachment = async (req, res) => {
     );
     if (!att.rows.length) return res.status(404).json({ error: 'Allegato non trovato.' });
 
-    const { public_id } = att.rows[0];
-
-    // Cancella il file fisico
-    const fs = require('fs');
-    const filePath = path.join(__dirname, '..', 'uploads', public_id);
+    const filePath = path.join(uploadsDir, att.rows[0].public_id);
     try {
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-    } catch (err) {
-      console.error('Errore cancellazione file:', err.message);
+    } catch (fsErr) {
+      console.error('Errore cancellazione file:', fsErr.message);
+      // Non bloccare la risposta se il file non esiste già
     }
 
     await pool.query('DELETE FROM task_attachments WHERE id=$1', [req.params.attId]);

@@ -1,23 +1,13 @@
 import { useState } from 'react';
 import { toggleTask } from '../services/api';
-import EditTaskModal      from './EditTaskModal';
-import AttachmentPreview  from './AttachmentPreview';
+import { buildFileUrl } from '../services/api';
+import EditTaskModal     from './EditTaskModal';
+import AttachmentPreview from './AttachmentPreview';
 import styles from './TaskItem.module.css';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
 marked.use({ breaks: true, gfm: true });
-
-// Thumbnail via Openinary (/t/transforms/path)
-function buildThumbUrl(url, transforms = 'w_120,h_90,c_fill,q_auto') {
-  try {
-    const u = new URL(url);
-    const path = u.pathname.replace(/^\/public\//, '');
-    return `${u.origin}/t/${transforms}/${path}`;
-  } catch {
-    return url;
-  }
-}
 
 function AttachmentItem({ att, onPreview }) {
   const isImage = att.mime_type?.startsWith('image/');
@@ -28,6 +18,8 @@ function AttachmentItem({ att, onPreview }) {
              : isPdf   ? 'bi-file-pdf'
                        : 'bi-paperclip';
 
+  const fileUrl = buildFileUrl(att.url);
+
   return (
     <button
       className={`${styles.attachmentBtn} ${isImage ? styles.attachmentImgBtn : ''}`}
@@ -36,7 +28,7 @@ function AttachmentItem({ att, onPreview }) {
     >
       {isImage ? (
         <img
-          src={buildThumbUrl(att.url)}
+          src={fileUrl}
           alt={att.filename}
           className={styles.attachmentThumb}
         />
@@ -86,7 +78,8 @@ export default function TaskItem({ task, onUpdate, onDeleteRequest }) {
         tabIndex={0}
         onKeyDown={e => e.key === 'Enter' && handleToggle()}
       >
-        <div className="form-check" onClick={e => e.stopPropagation()} style={{ marginTop: '2px', flexShrink: 0 }}>
+        <div className="form-check" onClick={e => e.stopPropagation()}
+          style={{ marginTop: '2px', flexShrink: 0 }}>
           <input
             className={`form-check-input ${styles.check}`}
             type="checkbox"
