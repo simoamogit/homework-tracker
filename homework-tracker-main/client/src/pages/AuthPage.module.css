@@ -1,0 +1,84 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  padding: 1rem;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid var(--border);
+}
+
+.header    { margin-bottom: 2rem; }
+.title     { font-size: 1.5rem; font-weight: 700; color: var(--text-1); margin-bottom: 0.25rem; letter-spacing: -0.5px; }
+.subtitle  { color: var(--text-3); font-size: 0.9rem; }
+
+.form  { display: flex; flex-direction: column; gap: 1.1rem; }
+.field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input {
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  outline: none;
+  color: var(--text-1);
+  background: var(--surface-2);
+  transition: border-color 0.15s, background 0.15s;
+  font-family: inherit;
+}
+
+.input:focus { border-color: var(--accent); background: var(--surface); }
+
+.error {
+  background: var(--error-bg);
+  color: var(--error-text);
+  border: 1px solid var(--error-border);
+  border-radius: 6px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.85rem;
+}
+
+.button {
+  background: var(--accent);
+  color: var(--surface);
+  border: none;
+  border-radius: 6px;
+  padding: 0.8rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-top: 0.25rem;
+  font-family: inherit;
+}
+
+.button:hover:not(:disabled) { background: var(--accent-hover); }
+.button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.switch {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+  color: var(--text-3);
+  border-top: 1px solid var(--border-light);
+  padding-top: 1.5rem;
+}
+
+.link { color: var(--text-1); font-weight: 600; text-decoration: none; }
+.link:hover { text-decoration: underline; }

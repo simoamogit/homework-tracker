@@ -1,0 +1,55 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth }   from './context/AuthContext';
+import { ThemeProvider }           from './context/ThemeContext';
+import LandingPage   from './pages/LandingPage';
+import LoginPage     from './pages/LoginPage';
+import RegisterPage  from './pages/RegisterPage';
+import DashboardPage from './pages/DashboardPage';
+import SettingsPage  from './pages/SettingsPage';
+import ArchivePage   from './pages/ArchivePage';
+import StatisticsPage from './pages/StatisticsPage';
+
+function PrivateRoute({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  return user ? children : <Navigate to="/" replace />;
+}
+
+function PublicRoute({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  return user ? <Navigate to="/dashboard" replace /> : children;
+}
+
+function LandingRoute({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  return user ? <Navigate to="/dashboard" replace /> : children;
+}
+
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/"            element={<LandingRoute><LandingPage /></LandingRoute>} />
+      <Route path="/login"       element={<PublicRoute><LoginPage /></PublicRoute>} />
+      <Route path="/register"    element={<PublicRoute><RegisterPage /></PublicRoute>} />
+      <Route path="/dashboard"   element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
+      <Route path="/archive"     element={<PrivateRoute><ArchivePage /></PrivateRoute>} />
+      <Route path="/settings"    element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
+      <Route path="/statistics"  element={<PrivateRoute><StatisticsPage /></PrivateRoute>} />
+      <Route path="*"            element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
+  );
+}
