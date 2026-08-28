@@ -84,4 +84,40 @@ const reorderTasks = async (req, res) => {
   }
 };
 
-module.exports = { getTasks, createTask, updateTask, toggleTask, deleteTask, reorderTasks };
+// ── Aggiunto per la Dashboard ──────────────────────────────────────────────
+
+/**
+ * PATCH /api/tasks/:id
+ * Body: { "completed": boolean }
+ * Risposta nel formato atteso dalla Dashboard:
+ *   { id, title, subject, dueDate, completed }
+ */
+const patchCompleted = async (req, res) => {
+  const { completed } = req.body;
+
+  if (typeof completed !== 'boolean') {
+    return res.status(400).json({ error: '`completed` deve essere true o false.' });
+  }
+
+  try {
+    const task = await taskModel.toggleTask(req.params.id, req.user.id, completed);
+
+    if (!task) return res.status(404).json({ error: 'Compito non trovato.' });
+
+    cache.del(`tasks_${req.user.id}`);
+
+    // Mappa i campi nel formato atteso dalla Dashboard
+    res.json({
+      id:        task.id,
+      title:     task.description,   // description → title
+      subject:   task.subject,
+      dueDate:   task.date,          // date → dueDate
+      completed: task.completed,
+    });
+  } catch (err) {
+    console.error('[patchCompleted]', err);
+    res.status(500).json({ error: 'Errore interno.' });
+  }
+};
+
+module.exports = { getTasks, createTask, updateTask, toggleTask, deleteTask, reorderTasks, patchCompleted };
